@@ -1,0 +1,3 @@
+const audioRef = useRef(null);
+// Uso:
+<audio ref={audioRef} src={terminalSound} preload="auto" />

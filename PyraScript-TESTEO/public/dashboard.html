@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeSocial - Dashboard</title>
+    <style>
+        :root {
+            --primary: #00ff00;
+            --primary-dark: #007700;
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --text: #e0e0e0;
+            --text-secondary: #b0b0b0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        header {
+            background-color: #000;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--primary);
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            object-fit: cover;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: calc(100vh - 68px);
+        }
+        
+        .sidebar {
+            background-color: #111;
+            border-right: 1px solid #333;
+            padding: 1.5rem 1rem;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-menu a {
+            color: var(--text);
+            text-decoration: none;
+            display: block;
+            padding: 0.7rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: var(--primary-dark);
+            color: var(--primary);
+        }
+        
+        .sidebar-menu i {
+            margin-right: 0.8rem;
+            color: var(--primary);
+        }
+        
+        .main-content {
+            padding: 2rem;
+        }
+        
+        .post-form {
+            background-color: var(--card-bg);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+        }
+        
+        .post-form textarea {
+            width: 100%;
+            background-color: #2a2a2a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 1rem;
+            color: var(--text);
+            margin-bottom: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+        
+        .post-form textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 5px var(--primary);
+        }
+        
+        .post-form button {
+            background-color: var(--primary);
+            color: #000;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .post-form button:hover {
+            background-color: #00cc00;
+        }
+        
+        .feed {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .post {
+            background-color: var(--card-bg);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .post-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            object-fit: cover;
+            margin-right: 1rem;
+        }
+        
+        .post-user {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .post-time {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 0.2rem;
+        }
+        
+        .post-content {
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        
+        .post-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            border: 1px solid #333;
+        }
+        
+        .post-actions {
+            display: flex;
+            gap: 1.5rem;
+            border-top: 1px solid #333;
+            padding-top: 1rem;
+        }
+        
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .post-action:hover {
+            color: var(--primary);
+        }
+        
+        .trending-topics {
+            background-color: var(--card-bg);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .trending-topics h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 0.5rem;
+        }
+        
+        .trending-list {
+            list-style: none;
+        }
+        
+        .trending-list li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .trending-list a {
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .trending-list a:hover {
+            color: var(--primary);
+        }
+        
+        .trending-tag {
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        /* Efectos de neón */
+        .neon-text {
+            text-shadow: 0 0 5px var(--primary), 0 0 10px var(--primary);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo neon-text">CodeSocial</div>
+        <div class="user-menu">
+            <span class="username">@dev_user</span>
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Avatar" class="user-avatar">
+        </div>
+    </header>
+    
+    <div class="container">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active"><i class="fas fa-home"></i> Inicio</a></li>
+                <li><a href="#"><i class="fas fa-user"></i> Perfil</a></li>
+                <li><a href="#"><i class="fas fa-users"></i> Comunidades</a></li>
+                <li><a href="#"><i class="fas fa-bell"></i> Notificaciones</a></li>
+                <li><a href="#"><i class="fas fa-envelope"></i> Mensajes</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Configuración</a></li>
+                <li><a href="#"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
+            </ul>
+        </aside>
+        
+        <main class="main-content">
+            <div class="post-form pulse">
+                <textarea placeholder="¿Qué estás codificando hoy? Comparte con la comunidad..."></textarea>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <button style="background: none; color: var(--primary); padding: 0; margin-right: 1rem;"><i class="fas fa-image"></i></button>
+                        <button style="background: none; color: var(--primary); padding: 0;"><i class="fas fa-code"></i></button>
+                    </div>
+                    <button id="post-button">Publicar <i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+            
+            <div class="feed" id="feed">
+                <!-- Las publicaciones se cargarán aquí dinámicamente -->
+            </div>
+            
+            <div class="trending-topics">
+                <h3><i class="fas fa-fire"></i> Tendencias</h3>
+                <ul class="trending-list">
+                    <li><a href="#"><span class="trending-tag">#JavaScript</span> - 15.2K publicaciones</a></li>
+                    <li><a href="#"><span class="trending-tag">#Python</span> - 12.8K publicaciones</a></li>
+                    <li><a href="#"><span class="trending-tag">#WebDev</span> - 9.7K publicaciones</a></li>
+                    <li><a href="#"><span class="trending-tag">#AI</span> - 8.3K publicaciones</a></li>
+                    <li><a href="#"><span class="trending-tag">#React</span> - 7.1K publicaciones</a></li>
+                </ul>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // Datos de ejemplo para las publicaciones
+        const samplePosts = [
+            {
+                id: 1,
+                user: "code_master",
+                avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+                time: "Hace 15 minutos",
+                content: "Acabo de terminar mi proyecto de machine learning usando TensorFlow.js. ¡Fue un desafío pero aprendí mucho! #MachineLearning #JavaScript #AI",
+                likes: 42,
+                comments: 8,
+                shares: 3,
+                image: "https://source.unsplash.com/random/600x400/?coding,programming"
+            },
+            {
+                id: 2,
+                user: "dev_guru",
+                avatar: "https://randomuser.me/api/portraits/men/22.jpg",
+                time: "Hace 1 hora",
+                content: "Alguien más está emocionado por el nuevo lanzamiento de TypeScript 5.0? 🚀 #TypeScript #WebDev",
+                likes: 28,
+                comments: 5,
+                shares: 2,
+                image: null
+            },
+            {
+                id: 3,
+                user: "pythonista",
+                avatar: "https://randomuser.me/api/portraits/women/33.jpg",
+                time: "Hace 3 horas",
+                content: "Compartiendo mi último script de automatización que me ahorra horas de trabajo cada semana. ¿Quieren que comparta el código? #Python #Automation",
+                likes: 56,
+                comments: 12,
+                shares: 7,
+                image: "https://source.unsplash.com/random/600x400/?python,code"
+            }
+        ];
+        
+        // Función para renderizar las publicaciones
+        function renderPosts() {
+            const feed = document.getElementById('feed');
+            feed.innerHTML = '';
+            
+            samplePosts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.className = 'post';
+                postElement.innerHTML = `
+                    <div class="post-header">
+                        <img src="${post.avatar}" alt="${post.user}" class="post-avatar">
+                        <div>
+                            <div class="post-user">${post.user}</div>
+                            <div class="post-time">${post.time}</div>
+                        </div>
+                    </div>
+                    <div class="post-content">${post.content}</div>
+                    ${post.image ? `<img src="${post.image}" alt="Post image" class="post-image">` : ''}
+                    <div class="post-actions">
+                        <div class="post-action like-btn" data-post-id="${post.id}">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span>${post.likes}</span>
+                        </div>
+                        <div class="post-action">
+                            <i class="fas fa-comment"></i>
+                            <span>${post.comments}</span>
+                        </div>
+                        <div class="post-action">
+                            <i class="fas fa-share"></i>
+                            <span>${post.shares}</span>
+                        </div>
+                    </div>
+                `;
+                feed.appendChild(postElement);
+            });
+            
+            // Añadir eventos a los botones de like
+            document.querySelectorAll('.like-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const postId = this.getAttribute('data-post-id');
+                    const likeCount = this.querySelector('span');
+                    const icon = this.querySelector('i');
+                    
+                    if (this.classList.contains('liked')) {
+                        likeCount.textContent = parseInt(likeCount.textContent) - 1;
+                        this.classList.remove('liked');
+                        icon.style.color = 'var(--text-secondary)';
+                    } else {
+                        likeCount.textContent = parseInt(likeCount.textContent) + 1;
+                        this.classList.add('liked');
+                        icon.style.color = 'var(--primary)';
+                    }
+                });
+            });
+        }
+        
+        // Función para simular nueva publicación
+        function addNewPost() {
+            const postText = document.querySelector('.post-form textarea');
+            if (postText.value.trim() !== '') {
+                const newPost = {
+                    id: samplePosts.length + 1,
+                    user: "dev_user",
+                    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+                    time: "Ahora mismo",
+                    content: postText.value,
+                    likes: 0,
+                    comments: 0,
+                    shares: 0,
+                    image: null
+                };
+                
+                samplePosts.unshift(newPost);
+                renderPosts();
+                postText.value = '';
+                
+                // Mostrar notificación
+                showNotification('¡Publicación exitosa!');
+            }
+        }
+        
+        // Función para mostrar notificación
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.right = '20px';
+            notification.style.backgroundColor = 'var(--primary)';
+            notification.style.color = '#000';
+            notification.style.padding = '15px 25px';
+            notification.style.borderRadius = '4px';
+            notification.style.zIndex = '1000';
+            notification.style.fontWeight = 'bold';
+            notification.style.boxShadow = '0 0 10px rgba(0, 255, 0, 0.5)';
+            notification.style.animation = 'fadeIn 0.3s, fadeOut 0.3s 2.7s';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // Simular actualización periódica del feed
+        function simulateFeedUpdates() {
+            setInterval(() => {
+                // 20% de probabilidad de añadir una nueva publicación
+                if (Math.random() < 0.2) {
+                    const users = [
+                        {name: "web_dev", avatar: "https://randomuser.me/api/portraits/women/28.jpg"},
+                        {name: "js_ninja", avatar: "https://randomuser.me/api/portraits/men/75.jpg"},
+                        {name: "data_scientist", avatar: "https://randomuser.me/api/portraits/women/63.jpg"}
+                    ];
+                    
+                    const topics = [
+                        "Acabo de descubrir un truco increíble en CSS que simplifica mucho mi código. ¿Quieren que lo comparta? #CSS #WebDev",
+                        "Estoy trabajando en un nuevo framework para simplificar el desarrollo de APIs. ¿Alguien quiere probar la beta? #NodeJS #API",
+                        "¿Cuál es su editor de código favorito? Estoy considerando cambiar de VS Code a algo más minimalista. #DevTools",
+                        "Compartan sus proyectos actuales! Yo estoy construyendo un clon de Twitter con React y Firebase. #React #Firebase",
+                        "Alguien más asistirá a la próxima conferencia de desarrolladores? #DevConference"
+                    ];
+                    
+                    const randomUser = users[Math.floor(Math.random() * users.length)];
+                    const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+                    
+                    const newPost = {
+                        id: samplePosts.length + 1,
+                        user: randomUser.name,
+                        avatar: randomUser.avatar,
+                        time: "Hace unos segundos",
+                        content: randomTopic,
+                        likes: 0,
+                        comments: 0,
+                        shares: 0,
+                        image: Math.random() > 0.7 ? "https://source.unsplash.com/random/600x400/?coding,tech" : null
+                    };
+                    
+                    samplePosts.unshift(newPost);
+                    renderPosts();
+                    
+                    // Mostrar notificación de nueva publicación
+                    if (Math.random() > 0.5) {
+                        showNotification(`Nueva publicación de @${newPost.user}`);
+                    }
+                }
+            }, 10000); // Cada 10 segundos
+        }
+        
+        // Evento para el botón de publicar
+        document.getElementById('post-button').addEventListener('click', addNewPost);
+        
+        // También permitir publicar con Enter (Ctrl+Enter para salto de línea)
+        document.querySelector('.post-form textarea').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.ctrlKey && !e.shiftKey) {
+                e.preventDefault();
+                addNewPost();
+            }
+        });
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            renderPosts();
+            simulateFeedUpdates();
+            
+            // Simular notificación de bienvenida
+            setTimeout(() => {
+                showNotification('Bienvenido a CodeSocial! Conéctate con otros desarrolladores.');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+<!-- Mantén el mismo HTML que te envié antes pero actualiza el script final con: -->
+
+<script>
+// Conexión WebSocket
+const socket = new WebSocket(`ws://${window.location.hostname}:5000`);
+
+// Autenticación (usando JWT almacenado)
+const token = localStorage.getItem('token');
+
+// Obtener publicaciones al cargar
+async function loadPosts() {
+  try {
+    const response = await fetch('/api/posts', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) throw new Error('Error al cargar publicaciones');
+    
+    const posts = await response.json();
+    renderPosts(posts);
+  } catch (err) {
+    console.error(err);
+    showNotification('Error al cargar publicaciones');
+  }
+}
+
+// Escuchar mensajes WebSocket
+socket.addEventListener('message', (event) => {
+  const data = JSON.parse(event.data);
+  
+  if (data.type === 'NEW_POST') {
+    // Añadir nueva publicación al inicio del feed
+    const feed = document.getElementById('feed');
+    const postElement = createPostElement(data.post);
+    feed.insertBefore(postElement, feed.firstChild);
+    showNotification(`Nueva publicación de @${data.post.user.username}`);
+  }
+});
+
+// Función para publicar
+async function addNewPost() {
+  const postText = document.querySelector('.post-form textarea');
+  
+  if (postText.value.trim() !== '') {
+    try {
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          content: postText.value
+        })
+      });
+      
+      if (!response.ok) throw new Error('Error al publicar');
+      
+      postText.value = '';
+      showNotification('¡Publicación exitosa!');
+    } catch (err) {
+      console.error(err);
+      showNotification('Error al publicar');
+    }
+  }
+}
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', () => {
+  if (!token) {
+    window.location.href = '/login.html';
+    return;
+  }
+  
+  loadPosts();
+  
+  // Configurar eventos como antes...
+});
+</script>
